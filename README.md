@@ -1,3 +1,3 @@
 # Scanner
  Script em Bash para fazer scan de diretórios e arquivos em sites.
-![image](https://user-images.githubusercontent.com/39104938/222940410-d9aa348d-5d60-4666-a6c7-9ef39b707bf0.png)
+![2023-03-08_00-58](https://user-images.githubusercontent.com/39104938/223616216-06ee2acc-dbfb-4e4a-bf09-fcf3dca44a6f.png)
