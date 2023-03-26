@@ -1,17 +1,17 @@
 #!/bin/bash
 ######-----------------------------------------------------------
-# [!] Script desenvolvido no dia 04/03/2023
+# [!] Script atualizado  no dia 26/03/2023
 # [!] Desenvolvido por Jonathan Laco 
 # [!] Contato: jonathanlaco@castpytech.com
 #
 #----------------INFORMAÇÕES
+# 
+# [!] Versão: 2.0
 #
-# [!] Essa versão infelizmente duplica os resultados, 
-#     algo que será resolvido na próxima versão do script.
-# [!] Versão: 1.0
-# [!] Proxima versão contará com mais diretórios e subdirs, para
-#     fazer o scan.
+# [!] Essa versão conta com a remoção de resultados duplicados.
+#
 ######-----------------------------------------------------------
+clear
 echo "
 ███████╗ ██████╗ █████╗ ███╗   ██╗███╗   ██╗███████╗██████╗ 
 ██╔════╝██╔════╝██╔══██╗████╗  ██║████╗  ██║██╔════╝██╔══██╗
@@ -35,7 +35,12 @@ alvos=(
   "/css"
   "/js"
   "/imagens"
-  "/arquivo.txt")
+  "/media"
+  "/docs"
+  "/upload"
+  "/uploads"
+  "/bkp"
+  )
 
 verde='\033[0;32m'
 vermelho='\033[0;31m'
@@ -44,6 +49,7 @@ sem_cor='\033[0m'
 arquivo_saida="sucesso.txt"
 
 echo -n > $arquivo_saida
+urls_encontradas=()
 
 for alvo in "${alvos[@]}"
 do
@@ -54,6 +60,7 @@ do
   then
     echo -e "${verde}Alvo encontrado: $url${sem_cor}"
     echo $url >> $arquivo_saida
+    urls_encontradas+=("$url")
 
     arquivos=$(curl -s $url | grep -Po '(?<=href=")[^"]*(?=")')
     
@@ -67,8 +74,12 @@ do
         
         if [ $subresponse -eq 200 ]
         then
-          echo -e "${verde}Diretório encontrado: $suburl${sem_cor}"
-          echo $suburl >> $arquivo_saida
+          if [[ ! " ${urls_encontradas[@]} " =~ " ${suburl} " ]]
+          then
+            echo -e "${verde}Diretório encontrado: $suburl${sem_cor}"
+            echo $suburl >> $arquivo_saida
+            urls_encontradas+=("$suburl")
+          fi
         else
           echo -e "${vermelho}Diretório não encontrado: $suburl${sem_cor}"
         fi
@@ -78,8 +89,12 @@ do
         
         if [ $fileresponse -eq 200 ]
         then
-          echo -e "${verde}Arquivo encontrado: $fileurl${sem_cor}"
-          echo $fileurl >> $arquivo_saida
+          if [[ ! " ${urls_encontradas[@]} " =~ " ${fileurl} " ]]
+          then
+            echo -e "${verde}Arquivo encontrado: $fileurl${sem_cor}"
+            echo $fileurl >> $arquivo_saida
+            urls_encontradas+=("$fileurl")
+          fi
         else
           echo -e "${vermelho}Arquivo não encontrado: $fileurl${sem_cor}"
         fi
@@ -90,4 +105,4 @@ do
   fi
 done
 
-echo "Resultados encontrados foram salvos em  $arquivo_saida."
+echo "Resultados encontrados foram salvos em $arquivo_saida."
